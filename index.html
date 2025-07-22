@@ -1,39 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>SWIS Office App</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <!-- Loading Page -->
-  <div id="loading-screen" class="page">
-    <h1>Loading...</h1>
-  </div>
+function generateOfficeLayout(floor) {
+  officeLayout.innerHTML = "";
 
-  <!-- Main Menu -->
-  <div id="menu-screen" class="page hidden">
-    <img src="https://www.swis.cn/images/logo.png" alt="SWIS Logo" class="logo">
-    <h1>SWIS Office App</h1>
-    <div class="floor-buttons">
-      <button onclick="selectFloor(1)">1st Floor</button>
-      <button onclick="selectFloor(2)">2nd Floor</button>
-      <button onclick="selectFloor(3)">3rd Floor</button>
-    </div>
-  </div>
+  const deskCount = floor === "1" ? 4 : floor === "2" ? 6 : 9;
 
-  <!-- Office Page -->
-  <div id="office-screen" class="page hidden">
-    <button onclick="goBack()">← Back</button>
-    <h2 id="floor-label">Floor</h2>
-    <div class="office">
-      <div class="corner" id="corner-1"></div>
-      <div class="corner" id="corner-2"></div>
-      <div class="corner" id="corner-3"></div>
-      <div class="corner" id="corner-4"></div>
-    </div>
-  </div>
+  // Load saved colors from localStorage or create an array of "red"
+  let savedColors = JSON.parse(localStorage.getItem(`floor-${floor}-colors`)) || Array(deskCount).fill("red");
 
-  <script src="script.js"></script>
-</body>
-</html>
+  // Set grid columns for symmetrical layout
+  const layout = { "1": 2, "2": 3, "3": 3 };
+  officeLayout.style.display = "grid";
+  officeLayout.style.gridTemplateColumns = `repeat(${layout[floor]}, 1fr)`;
+  officeLayout.style.gap = "20px";
+  officeLayout.style.justifyContent = "center";
+
+  for (let i = 0; i < deskCount; i++) {
+    const desk = document.createElement("div");
+    desk.className = "desk";
+    desk.style.backgroundColor = savedColors[i];
+
+    desk.addEventListener("click", () => {
+      let currentColor = desk.style.backgroundColor;
+      let nextColor = colorCycle[(colorCycle.indexOf(currentColor) + 1) % colorCycle.length];
+      desk.style.backgroundColor = nextColor;
+
+      // Update saved colors array and save to localStorage
+      savedColors[i] = nextColor;
+      localStorage.setItem(`floor-${floor}-colors`, JSON.stringify(savedColors));
+    });
+
+    officeLayout.appendChild(desk);
+  }
+}
