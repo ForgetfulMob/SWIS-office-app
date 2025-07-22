@@ -1,9 +1,24 @@
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", () => {
+  // Show menu after loading
   setTimeout(() => {
     document.getElementById('loading-screen').classList.add('hidden');
     document.getElementById('menu-screen').classList.remove('hidden');
   }, 1500);
-};
+
+  // Color cycling logic (run only when corners are present)
+  const states = ['red', 'yellow', 'green'];
+  const corners = document.querySelectorAll('.corner');
+
+  corners.forEach(corner => {
+    corner.style.backgroundColor = 'red';
+    corner.addEventListener('click', () => {
+      const current = corner.style.backgroundColor;
+      const index = states.indexOf(current);
+      const next = states[(index + 1) % states.length];
+      corner.style.backgroundColor = next;
+    });
+  });
+});
 
 function selectFloor(floor) {
   document.getElementById('menu-screen').classList.add('hidden');
@@ -15,14 +30,3 @@ function goBack() {
   document.getElementById('office-screen').classList.add('hidden');
   document.getElementById('menu-screen').classList.remove('hidden');
 }
-
-// Color cycling logic
-const states = ['red', 'yellow', 'green'];
-document.querySelectorAll('.corner').forEach(corner => {
-  corner.addEventListener('click', () => {
-    const current = corner.style.backgroundColor || 'red';
-    const index = states.indexOf(current);
-    const next = states[(index + 1) % states.length];
-    corner.style.backgroundColor = next;
-  });
-});
